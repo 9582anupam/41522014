@@ -1,4 +1,5 @@
 import { Url } from "../models/url.models.js";
+import { logSuccess, logError, logWarning } from "../utils/sendLogs.js";
 
 export const shortenUrl = async (req, res) => {
 
@@ -7,6 +8,7 @@ export const shortenUrl = async (req, res) => {
 
         // basic validation
         if (!originalUrl) {
+            logError("URL shortening failed: originalUrl is required", "controller");
             return res.status(400).json({ error: "originalUrl is required" });
         }
 
@@ -27,6 +29,7 @@ export const shortenUrl = async (req, res) => {
         // Check if shortName already exists in the database
         const existingUrl = await Url.findOne({ shortUrl: shortName });
         if (existingUrl) {
+            logWarning(`URL shortening failed: shortName '${shortName}' already exists`, "controller");
             return res.status(400).json({ error: "shortName already exists. Please choose another one." });
         }
 
@@ -40,8 +43,10 @@ export const shortenUrl = async (req, res) => {
 
         await newUrl.save();
 
+        logSuccess(`URL shortened successfully: ${originalUrl} -> ${shortName}`, "controller");
         return res.status(201).json({ message: "URL shortened successfully", data: newUrl });
     } catch (error) {
+        logError(`URL shortening failed: ${error.message}`, "controller");
         console.log(error);
         return res.status(500).json({ error: "Internal server errorr" });
     }
@@ -52,18 +57,23 @@ export const getOriginalUrl = async (req, res) => {
     try {
         const { shortName } = req.params;
         if (!shortName) {
+            logError("URL retrieval failed: shortName is required", "controller");
             return res.status(400).json({ error: "shortName is required" });
         }
         const urlMapping = await Url.findOne({ shortUrl: shortName });
         if (!urlMapping) {
+            logWarning(`URL retrieval failed: Short URL '${shortName}' not found`, "controller");
             return res.status(404).json({ error: "Short url not found" });
         }
         const now = new Date();
         if (urlMapping.validity < now) {
+            logWarning(`URL retrieval failed: Short URL '${shortName}' has expired`, "controller");
             return res.status(410).json({ error: "This short uurl has expired" });
         }
+        logSuccess(`URL retrieved successfully: ${shortName} -> ${urlMapping.originalUrl}`, "controller");
         return res.status(200).json({ originalUrl: urlMapping.originalUrl });
     } catch (error) {
+        logError(`URL retrieval failed: ${error.message}`, "controller");
         console.log(error);
         return res.status(500).json({ error: "Internal server error" });
     }
