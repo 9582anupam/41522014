@@ -6,8 +6,17 @@ const urlSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        price: {
-            type: Number,
+        originalUrl: {
+            type: String,
+            required: true,
+        },
+        shortUrl: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        validity: {
+            type: Date,
             required: true,
         },
     },

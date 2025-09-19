@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
+import { shortenUrl, getOriginalUrl } from "../../controllers/url.controller.js";
 
-
-// router.route("/url").get(getAllProducts);
+router.post("/shorten", shortenUrl);
+router.get("/:shortName", getOriginalUrl);
 
 export default router;
