@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const LOGGER_URL = process.env.LOGGER_URL || "http://logs:5001";
+const LOGGER_URL = process.env.LOGGER_URL || "";
 
 const sendLog = async (level, message, packageName = "server") => {
     try {
-        await axios.post(`${LOGGER_URL}/api/v1/logs`, {
+        await axios.post(`${LOGGER_URL}`, {
             stack: "backend",
             level: level,
             package: packageName,
