@@ -7,7 +7,9 @@ const app = express();
 
 // Middleware Setup
 const corsOptions = {
-    origin: ["https://url-shortner.vercel.app", "http://localhost:3000"], // Allow your frontend domain and others
+    origin: ["https://url-shortner.vercel.app", "http://localhost:5000", 
+        "http://localhost:3000"
+    ], // Allow your frontend domain and others
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Enable cookies in requests and responses
