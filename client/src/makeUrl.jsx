@@ -1,4 +1,5 @@
-import { useState } from 'react'
+ import { useState } from 'react'
+import { logSuccess, logError } from './utils/sendLogs.js'
 
 function MakeUrl() {
   const [originalUrl, setOriginalUrl] = useState('')
@@ -13,6 +14,7 @@ function MakeUrl() {
     e.preventDefault()
     
     if (!originalUrl) {
+      logError('URL required', 'component')
       setError('Please enter a URL to shorten')
       return
     }
@@ -38,13 +40,16 @@ function MakeUrl() {
 
       if (response.ok) {
         setShortUrl(`http://localhost:3000/${data.data.shortUrl}`)
+        logSuccess(`URL shortened: ${data.data.shortUrl}`, 'component')
         setSuccess('URL shortened successfully!')
         setOriginalUrl('')
         setShortName('')
       } else {
+        logError(`Shortening failed: ${data.error}`, 'component')
         setError(data.error || 'Failed to shorten URL')
       }
     } catch (error) {
+      logError(`Network error: ${error.message}`, 'component')
       setError('Network error. Please try again.')
       console.error('Error:', error)
     } finally {
@@ -54,6 +59,7 @@ function MakeUrl() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shortUrl)
+    logSuccess('URL copied to clipboard', 'component')
     setSuccess('Copied to clipboard!')
   }
 
